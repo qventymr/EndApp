@@ -45,13 +45,17 @@
         android:textColor="@color/white"
         android:textColorHint="#646464"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:shadowColor="#7F000000"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="2" />
 
     <EditText
         android:id="@+id/editText_notes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="?attr/actionBarSize"
+        android:layout_marginHorizontal="35dp"
         android:layout_marginTop="30dp"
         android:fontFamily="@font/poppins_medium"
         android:hint="Description"
