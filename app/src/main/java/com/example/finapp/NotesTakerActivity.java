@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.finapp.Adapter.NotesListAdapter;
 import com.example.finapp.Models.Notes;
 
 import java.text.SimpleDateFormat;
@@ -50,7 +51,7 @@ public class NotesTakerActivity extends AppCompatActivity {
                 String description = editText_notes.getText().toString();
 
                 if(description.isEmpty()) {
-                    Toast.makeText(NotesTakerActivity.this, "Please, enter description", Toast.LENGTH_SHORT).show();
+                    description = " ";
                     return;
                 }
                 SimpleDateFormat formatter = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");

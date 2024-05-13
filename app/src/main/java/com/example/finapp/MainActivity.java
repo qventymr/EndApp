@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             @Override
             public boolean onQueryTextChange(String newText) {
                 filter (newText);
+
                 return true;
             }
         });
@@ -94,7 +95,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 database.mainDAO().insert(new_notes);
                 notes.clear();
                 notes.addAll(database.mainDAO().getAll());
-                notesListAdapter.notifyDataSetChanged();
+                updateRecycle(notes);
+
             }
         }
         if (requestCode == 102) {
@@ -103,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
                 database.mainDAO().update(new_notes.getID(), new_notes.getTitle(), new_notes.getNotes());
                 notes.clear();
                 notes.addAll(database.mainDAO().getAll());
-                notesListAdapter.notifyDataSetChanged();
+                updateRecycle(notes);
             }
         }
     }
@@ -161,6 +163,8 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             notesListAdapter.notifyDataSetChanged();
             Toast.makeText(MainActivity.this, "Note removed", Toast.LENGTH_SHORT).show();
             return true;
+        } else if (itemId == R.id.date) {
+            ;
         }
 
         return false; // Возвращаем false для всех остальных случаев

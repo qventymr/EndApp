@@ -53,7 +53,7 @@ public class NotesListAdapter extends RecyclerView.Adapter <NotesViewHolder>{
         } else {
             holder.imageView_pin.setImageResource(0);
         }
-        int color_code = getRandomColor();
+        int color_code = R.color.color5;
         holder.notes_container.setCardBackgroundColor(holder.itemView.getResources().getColor(color_code));
 
         holder.notes_container.setOnClickListener(new View.OnClickListener() {
@@ -94,6 +94,7 @@ public class NotesListAdapter extends RecyclerView.Adapter <NotesViewHolder>{
 
     public void filterList (List<Notes> filteredList) {
         list = filteredList;
+
         notifyDataSetChanged();
 
     }
