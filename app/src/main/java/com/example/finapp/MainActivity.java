@@ -12,10 +12,17 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.DatePickerDialog;
+import android.app.NotificationChannel;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.Toast;
 
 import com.example.finapp.Adapter.NotesListAdapter;
@@ -24,8 +31,11 @@ import com.example.finapp.Models.Notes;
 import com.example.finapp.R;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener{
@@ -164,11 +174,47 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             Toast.makeText(MainActivity.this, "Note removed", Toast.LENGTH_SHORT).show();
             return true;
         } else if (itemId == R.id.date) {
-            ;
+            openDialog();
         }
 
         return false; // Возвращаем false для всех остальных случаев
     }
 
+    private void openDialog(){
+
+        DatePickerDialog dialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+            @SuppressLint("ScheduleExactAlarm")
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int day) {
+                MaterialTimePicker materialTimePicker = new MaterialTimePicker.Builder()
+                        .setTimeFormat(TimeFormat.CLOCK_24H)
+                        .setHour(12)
+                        .setMinute(0)
+                        .setTitleText("Выберете время для напоминания")
+                        .build();
+                materialTimePicker.addOnPositiveButtonClickListener(v -> {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(Calendar.SECOND, 0);
+                    calendar.set(Calendar.MILLISECOND, 0);
+                    calendar.set(Calendar.MINUTE, materialTimePicker.getMinute());
+                    calendar.set(Calendar.SECOND, materialTimePicker.getHour());
+
+                    if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
+                        calendar.add(Calendar.DATE, 1); // Если время уже прошло, установите его на следующий день
+                    }
+
+                    Intent intent = new Intent(MainActivity.this, ReminderReceiver.class);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                    alarmManager.setExactAndAllowWhileIdle(., calendar.getTimeInMillis(), pendingIntent);
+
+
+                });
+            }
+        }, 2024, 0, 15);
+        dialog.show();
+
+    }
 
 }
