@@ -61,8 +61,7 @@
         android:hint="Description"
         android:padding="8dp"
         android:textColor="#646464"
-        android:inputType="textMultiLine"
-        android:drawableRight="@drawable/ic_bold"
+
         android:textColorHint="#818181"
         android:textSize="18sp"
         android:textStyle="normal" />
