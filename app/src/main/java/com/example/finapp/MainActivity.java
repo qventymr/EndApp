@@ -4,31 +4,25 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
-import android.app.NotificationChannel;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.DatePicker;
 import android.widget.Toast;
 
 import com.example.finapp.Adapter.NotesListAdapter;
 import com.example.finapp.DataBase.RoomDB;
 import com.example.finapp.Models.Notes;
-import com.example.finapp.R;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.timepicker.MaterialTimePicker;
@@ -38,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener{
+public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuItemClickListener {
 
     RecyclerView recyclerView;
     FloatingActionButton fab_add;
@@ -77,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                filter (newText);
+                filter(newText);
 
                 return true;
             }
@@ -88,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         List<Notes> filteredList = new ArrayList<>();
         for (Notes singlenote : notes) {
             if (singlenote.getTitle().toLowerCase().contains(newText.toLowerCase())
-            || singlenote.getNotes().toLowerCase().contains(newText.toLowerCase()) ) {
+                    || singlenote.getNotes().toLowerCase().contains(newText.toLowerCase())) {
                 filteredList.add(singlenote);
             }
         }
@@ -139,9 +133,10 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
         public void onLongClick(Notes notes, CardView cardView) {
             selectedNote = new Notes();
             selectedNote = notes;
-            showPopUp (cardView);
+            showPopUp(cardView);
         }
     };
+
     private void showPopUp(CardView cardView) {
 
         PopupMenu popupMenu = new PopupMenu(this, cardView);
@@ -173,48 +168,15 @@ public class MainActivity extends AppCompatActivity implements PopupMenu.OnMenuI
             notesListAdapter.notifyDataSetChanged();
             Toast.makeText(MainActivity.this, "Note removed", Toast.LENGTH_SHORT).show();
             return true;
-        } else if (itemId == R.id.date) {
-            openDialog();
+        } else if (itemId == R.id.share) {
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_TITLE, selectedNote.getNotes()); // Заголовок заметки
+            sendIntent.putExtra(Intent.EXTRA_TEXT, selectedNote.getNotes() + "\n\n" + selectedNote.getTitle()); // Текст заметки
+            sendIntent.setType("text/plain");
+            startActivity(Intent.createChooser(sendIntent, "Поделиться заметкой"));
+            return true;
         }
-
-        return false; // Возвращаем false для всех остальных случаев
+        return false;
     }
-
-    private void openDialog(){
-
-        DatePickerDialog dialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-            @SuppressLint("ScheduleExactAlarm")
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int day) {
-                MaterialTimePicker materialTimePicker = new MaterialTimePicker.Builder()
-                        .setTimeFormat(TimeFormat.CLOCK_24H)
-                        .setHour(12)
-                        .setMinute(0)
-                        .setTitleText("Выберете время для напоминания")
-                        .build();
-                materialTimePicker.addOnPositiveButtonClickListener(v -> {
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.set(Calendar.SECOND, 0);
-                    calendar.set(Calendar.MILLISECOND, 0);
-                    calendar.set(Calendar.MINUTE, materialTimePicker.getMinute());
-                    calendar.set(Calendar.SECOND, materialTimePicker.getHour());
-
-                    if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
-                        calendar.add(Calendar.DATE, 1); // Если время уже прошло, установите его на следующий день
-                    }
-
-                    Intent intent = new Intent(MainActivity.this, ReminderReceiver.class);
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                    alarmManager.setExactAndAllowWhileIdle(., calendar.getTimeInMillis(), pendingIntent);
-
-
-                });
-            }
-        }, 2024, 0, 15);
-        dialog.show();
-
-    }
-
 }
